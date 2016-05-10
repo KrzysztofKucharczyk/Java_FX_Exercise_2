@@ -3,7 +3,6 @@ package com.starterkit.javafx.dataprovider;
 import java.util.Collection;
 
 import com.starterkit.javafx.dataprovider.data.BookVO;
-import com.starterkit.javafx.dataprovider.data.SexVO;
 import com.starterkit.javafx.dataprovider.impl.DataProviderImpl;
 
 /**
@@ -28,5 +27,7 @@ public interface DataProvider {
 	 *            sex
 	 * @return collection of persons matching the given criteria
 	 */
-	Collection<BookVO> findBooks(String name);
+	Collection<BookVO> findBooks(String title, String authors);
+
+	Collection<BookVO> getBooks();
 }

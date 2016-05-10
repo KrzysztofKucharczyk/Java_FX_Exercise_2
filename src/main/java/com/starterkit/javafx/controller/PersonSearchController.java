@@ -1,25 +1,18 @@
 package com.starterkit.javafx.controller;
 
 import java.net.URL;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import com.starterkit.javafx.controls.LocalDateTableCell;
 import com.starterkit.javafx.dataprovider.DataProvider;
 import com.starterkit.javafx.dataprovider.data.BookVO;
 import com.starterkit.javafx.dataprovider.data.SexVO;
 import com.starterkit.javafx.model.PersonSearch;
-import com.starterkit.javafx.model.Sex;
 import com.starterkit.javafx.texttospeech.Speaker;
 
-import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -28,17 +21,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Callback;
-import javafx.util.StringConverter;
 
 /**
  * Controller for the person search screen.
@@ -80,12 +67,15 @@ public class PersonSearchController {
 	 */
 	@FXML
 	private TextField titleField;
-
+	
 	@FXML
-	private ComboBox<Sex> sexField;
+	private TextField authorsField;
 
 	@FXML
 	private Button searchButton;
+	
+	@FXML
+	private Button showBooksButton;
 
 	@FXML
 	private TableView<BookVO> resultTable;
@@ -94,13 +84,17 @@ public class PersonSearchController {
 	private TableColumn<BookVO, String> titleColumn;
 
 	@FXML
-	private TableColumn<BookVO, String> sexColumn;
+	private TableColumn<BookVO, String> authorsColumn;
 
 	@FXML
-	private TableColumn<BookVO, LocalDate> birthDateColumn;
+	private TableColumn<BookVO, String> yearColumn;
+
+	@FXML
+	private TableColumn<BookVO, String> genreColumn;
 
 	private final DataProvider dataProvider = DataProvider.INSTANCE;
 
+	@SuppressWarnings("unused")
 	private final Speaker speaker = Speaker.INSTANCE;
 
 	private final PersonSearch model = new PersonSearch();
@@ -128,82 +122,24 @@ public class PersonSearchController {
 	private void initialize() {
 		LOG.debug("initialize(): nameField = " + titleField);
 
-		initializeSexField();
-
 		initializeResultTable();
 
 		/*
 		 * Bind controls properties to model properties.
 		 */
 		titleField.textProperty().bindBidirectional(model.titleProperty());
-		sexField.valueProperty().bindBidirectional(model.sexProperty());
+		authorsField.textProperty().bindBidirectional(model.authorsProperty());
 		resultTable.itemsProperty().bind(model.resultProperty());
-
-		/*
-		 * Preselect the default value for sex.
-		 */
-		model.setSex(Sex.ANY);
-
-		/*
-		 * This works also, because we are using bidirectional binding.
-		 */
-		// sexField.setValue(Sex.ANY);
+		
+		titleField.setText("");
+		authorsField.setText("");
 
 		/*
 		 * Make the Search button inactive when the Name field is empty.
 		 */
-		searchButton.disableProperty().bind(titleField.textProperty().isEmpty());
+		searchButton.disableProperty().bind(titleField.textProperty().isEmpty().and(authorsField.textProperty().isEmpty()));
 	}
 
-	private void initializeSexField() {
-		/*
-		 * Add items to the list in combo box.
-		 */
-		for (Sex sex : Sex.values()) {
-			sexField.getItems().add(sex);
-		}
-
-		/*
-		 * Set cell factory to render internationalized texts for list items.
-		 */
-		sexField.setCellFactory(new Callback<ListView<Sex>, ListCell<Sex>>() {
-
-			@Override
-			public ListCell<Sex> call(ListView<Sex> param) {
-				return new ListCell<Sex>() {
-
-					@Override
-					protected void updateItem(Sex item, boolean empty) {
-						super.updateItem(item, empty);
-						if (empty) {
-							return;
-						}
-						String text = getInternationalizedText(item);
-						setText(text);
-					}
-				};
-			}
-		});
-
-		/*
-		 * Set converter to display internationalized text for selected value.
-		 */
-		sexField.setConverter(new StringConverter<Sex>() {
-
-			@Override
-			public String toString(Sex object) {
-				return getInternationalizedText(object);
-			}
-
-			@Override
-			public Sex fromString(String string) {
-				/*
-				 * Not used, because combo box is not editable.
-				 */
-				return null;
-			}
-		});
-	}
 
 	private void initializeResultTable() {
 		/*
@@ -211,7 +147,16 @@ public class PersonSearchController {
 		 * columns.
 		 */
 		titleColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getTitle()));
-		 titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+		titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+		authorsColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getAuthors()));
+		authorsColumn.setCellValueFactory(new PropertyValueFactory<>("authors"));
+
+		yearColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getYear()));
+		yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
+
+		genreColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getGenre()));
+		genreColumn.setCellValueFactory(new PropertyValueFactory<>("genre"));
 		// sexColumn.setCellValueFactory(
 		// new Callback<TableColumn.CellDataFeatures<BookVO, String>,
 		// ObservableValue<String>>() {
@@ -285,17 +230,6 @@ public class PersonSearchController {
 	}
 
 	/**
-	 * Gets an internationalized text for given {@link Sex} value.
-	 *
-	 * @param sex
-	 *            sex
-	 * @return text
-	 */
-	private String getInternationalizedText(Sex sex) {
-		return resources.getString("sex." + sex.name());
-	}
-
-	/**
 	 * The JavaFX runtime calls this method when the <b>Search</b> button is
 	 * clicked.
 	 *
@@ -305,7 +239,14 @@ public class PersonSearchController {
 	@FXML
 	private void searchButtonAction(ActionEvent event) {
 		LOG.debug("'Search' button clicked");
-		searchButtonActionVersion2();
+		searchButtonActionVersion();
+	}
+
+	@FXML
+	private void showButtonAction(ActionEvent event) {
+		LOG.debug("'Show' button clicked");
+
+		showButtonActionVersion();
 	}
 
 	/**
@@ -315,7 +256,66 @@ public class PersonSearchController {
 	 * background thread.
 	 * </p>
 	 */
-	private void searchButtonActionVersion2() {
+	private void searchButtonActionVersion() {
+		/*
+		 * Use task to execute the potentially long running call in background
+		 * (separate thread), so that the JavaFX Application Thread is not
+		 * blocked.
+		 */
+		Task<Collection<BookVO>> backgroundTask = new Task<Collection<BookVO>>() {
+
+			/**
+			 * This method will be executed in a background thread.
+			 */
+			@Override
+			protected Collection<BookVO> call() throws Exception {
+				LOG.debug("call() called");
+
+				if(model.getAuthors().isEmpty())
+					model.setAuthors(" ");
+				Collection<BookVO> result = dataProvider.findBooks( 
+						model.getTitle(),
+						model.getAuthors());
+
+				return result;
+			}
+
+			/**
+			 * This method will be executed in the JavaFX Application Thread
+			 * when the task finishes.
+			 */
+			@Override
+			protected void succeeded() {
+				LOG.debug("succeeded() called");
+
+				/*
+				 * Get result of the task execution.
+				 */
+				Collection<BookVO> result = getValue();
+				/*
+				 * Copy the result to model.
+				 */
+				model.setResult(new ArrayList<BookVO>(result));
+
+				/*
+				 * Reset sorting in the result table.
+				 */
+				resultTable.getSortOrder().clear();
+
+				//titleField.setText("");
+				//authorsField.setText("");
+			}
+		};
+
+		/*
+		 * Start the background task. In real life projects some framework
+		 * manages background tasks. You should never create a thread on your
+		 * own.
+		 */
+		new Thread(backgroundTask).start();
+	}
+
+	private void showButtonActionVersion() {
 		/*
 		 * Use task to execute the potentially long running call in background
 		 * (separate thread), so that the JavaFX Application Thread is not
@@ -333,15 +333,12 @@ public class PersonSearchController {
 				/*
 				 * Get the data.
 				 */
-				Collection<BookVO> result = dataProvider.findBooks( //
-						model.getName());
-				
+				Collection<BookVO> result = dataProvider.getBooks();
 
 				/*
 				 * Value returned from this method is stored as a result of task
 				 * execution.
 				 */
-					System.out.println("\n\n----\n" + result + "\n\n");
 				return result;
 			}
 
@@ -357,7 +354,6 @@ public class PersonSearchController {
 				 * Get result of the task execution.
 				 */
 				Collection<BookVO> result = getValue();
-				System.out.println(result);
 				/*
 				 * Copy the result to model.
 				 */
@@ -377,63 +373,4 @@ public class PersonSearchController {
 		 */
 		new Thread(backgroundTask).start();
 	}
-
-	/**
-	 * This implementation is correct.
-	 * <p>
-	 * The {@link DataProvider#findPersons(String, SexVO)} call is executed in a
-	 * background thread.
-	 * </p>
-	 */
-	private void searchButtonActionVersion3() {
-		/*
-		 * Use runnable to execute the potentially long running call in
-		 * background (separate thread), so that the JavaFX Application Thread
-		 * is not blocked.
-		 */
-		Runnable backgroundTask = new Runnable() {
-
-			/**
-			 * This method will be executed in a background thread.
-			 */
-			@Override
-			public void run() {
-				LOG.debug("backgroundTask.run() called");
-
-				/*
-				 * Get the data.
-			
-				/*
-				 * Add an event(runnable) to the event queue.
-				 */
-				Platform.runLater(new Runnable() {
-
-					/**
-					 * This method will be executed in the JavaFX Application
-					 * Thread.
-					 */
-					@Override
-					public void run() {
-						LOG.debug("Platform.runLater(Runnable.run()) called");
-
-						/*
-						 * Copy the result to model.
-						 */
-			
-						/*
-						 * Reset sorting in the result table.
-						 */
-						resultTable.getSortOrder().clear();
-					}
-				});
-			}
-		};
-
-		/*
-		 * Start the background task. In real life projects some framework
-		 * manages threads. You should never create a thread on your own.
-		 */
-		new Thread(backgroundTask).start();
-	}
-
 }

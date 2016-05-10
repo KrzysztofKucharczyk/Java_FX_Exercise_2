@@ -20,19 +20,11 @@ import com.starterkit.javafx.dataprovider.DataProvider;
 import com.starterkit.javafx.dataprovider.data.BookVO;
 
 /**
- * Provides data. Data is stored locally in this object. Additionally a call
- * delay is simulated.
- *
- * @author Leszek
+*
  */
 public class DataProviderImpl implements DataProvider {
 
 	private static final Logger LOG = Logger.getLogger(DataProviderImpl.class);
-
-	/**
-	 * Delay (in ms) for method calls.
-	 */
-	// private static final long CALL_DELAY = 3000;
 
 	private Collection<BookVO> persons = new ArrayList<>();
 
@@ -97,27 +89,35 @@ public class DataProviderImpl implements DataProvider {
 	}
 
 	@Override
-	public Collection<BookVO> findBooks(String name) {
+	public Collection<BookVO> findBooks(String title, String authors) {
 		LOG.debug("Entering findPersons()");
 
-		/*
-		 * Simulate a call delay.
-		 */
-		// try {
-		// Thread.sleep(CALL_DELAY);
-		// } catch (InterruptedException e) {
-		// throw new RuntimeException("Thread interrupted", e);
-		// }
+		Collection<BookVO> result = new ArrayList<>();
 
-		// Collection<BookVO> result = persons.stream().filter(p -> //
-		// ((name == null || name.isEmpty()) || (name != null && !name.isEmpty()
-		// && p.getTitle().contains(name))) //
-		//
-		// ).collect(Collectors.toList());
+		if (authors.trim().isEmpty())
+			result = persons.stream()
+					.filter(p -> ((title == null || title.isEmpty())
+							|| (title != null && !title.isEmpty() && p.getTitle().contains(title))))
+					.collect(Collectors.toList());
+		else if (title.trim().isEmpty()) {
+			result = persons.stream()
+					.filter(p -> ((authors == null || authors.isEmpty())
+							|| (authors != null && !authors.isEmpty() && p.getAuthors().contains(authors))))
+					.collect(Collectors.toList());
+		} else {
+			result = persons.stream()
+					.filter(p -> ((title == null || title.isEmpty() || authors == null || authors.isEmpty())
+							|| (title != null && !title.isEmpty() && p.getTitle().contains(title) && authors != null
+									&& !authors.isEmpty() && p.getAuthors().contains(authors))))
+					.collect(Collectors.toList());
+		}
+		LOG.debug("Leaving findPersons()");
+		return result;
+	}
 
+	@Override
+	public Collection<BookVO> getBooks() {
 		Collection<BookVO> result = persons;
-		System.out.println("RESULTS: " + result);
-
 		LOG.debug("Leaving findPersons()");
 		return result;
 	}

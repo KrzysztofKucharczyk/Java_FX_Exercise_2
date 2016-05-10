@@ -6,9 +6,7 @@ import java.util.List;
 import com.starterkit.javafx.dataprovider.data.BookVO;
 
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -21,17 +19,15 @@ import javafx.collections.FXCollections;
 public class PersonSearch {
 
 	private final StringProperty title = new SimpleStringProperty();
-	private final ObjectProperty<Sex> sex = new SimpleObjectProperty<>();
+	private final StringProperty authors = new SimpleStringProperty();
 	private final ListProperty<BookVO> result = new SimpleListProperty<>(
 			FXCollections.observableList(new ArrayList<>()));
 
-	public final String getName() {
-		System.out.println("---> " + title);
-		System.out.println("---> " + title.get());
+	public final String getTitle() {
 		return title.get();
 	}
 
-	public final void setName(String value) {
+	public final void setTitle(String value) {
 		title.set(value);
 	}
 
@@ -39,16 +35,16 @@ public class PersonSearch {
 		return title;
 	}
 
-	public final Sex getSex() {
-		return sex.get();
+	public final String getAuthors() {
+		return authors.get();
 	}
 
-	public final void setSex(Sex value) {
-		sex.set(value);
+	public final void setAuthors(String value) {
+		authors.set(value);
 	}
 
-	public ObjectProperty<Sex> sexProperty() {
-		return sex;
+	public StringProperty authorsProperty() {
+		return authors;
 	}
 
 	public final List<BookVO> getResult() {
@@ -65,7 +61,7 @@ public class PersonSearch {
 
 	@Override
 	public String toString() {
-		return "PersonSearch [name=" + title + ", sex=" + sex + ", result=" + result + "]";
+		return "PersonSearch [name=" + title  + ", result=" + result + "]";
 	}
 
 }
