@@ -5,7 +5,19 @@
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="400.0" prefWidth="500" xmlns="http://javafx.com/javafx/8.0.51" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.starterkit.javafx.controller.ImageController">
-
+<AnchorPane fx:id="anchorPane" prefHeight="600.0" prefWidth="600"
+	xmlns="http://javafx.com/javafx/8.0.51" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="com.starterkit.javafx.controller.ImageController">
+	<ScrollPane	fx:id="scrollPane" layoutX="0" layoutY="0" prefHeight="400" prefWidth="585" pannable="true">
+		<content>
+			<ImageView fx:id="imageView" layoutX="0" layoutY="0" preserveRatio="true" />
+		</content>
+	</ScrollPane>
+	<Button fx:id="nextImageButton" defaultButton="true" layoutX="14.0"
+		layoutY="550.0" mnemonicParsing="false" onAction="#nextImageButtonAction"
+		text="button.search" />
+	<!-- <Button fx:id="previousImageButton" defaultButton="false" layoutX="54.0" 
+		layoutY="550.0" mnemonicParsing="false" text="%button.search" /> -->
 </AnchorPane>

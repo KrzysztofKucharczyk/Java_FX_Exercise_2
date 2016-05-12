@@ -9,7 +9,6 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import com.starterkit.javafx.dataprovider.DataProvider;
 import com.starterkit.javafx.texttospeech.Speaker;
 
 import javafx.beans.value.ChangeListener;
@@ -19,10 +18,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -34,8 +31,6 @@ import javafx.stage.StageStyle;
 public class PersonSearchController {
 
 	private static final Logger LOG = Logger.getLogger(PersonSearchController.class);
-
-	private String imageLocalization = "";
 
 	private File folder = new File("");
 
@@ -58,12 +53,7 @@ public class PersonSearchController {
 	private Button searchButton;
 
 	@FXML
-	private Button showBooksButton;
-
-	@FXML
 	private ListView<String> list = new ListView<>();
-
-	private final DataProvider dataProvider = DataProvider.INSTANCE;
 
 	@SuppressWarnings("unused")
 	private final Speaker speaker = Speaker.INSTANCE;
@@ -76,13 +66,10 @@ public class PersonSearchController {
 	private void initialize() {
 		LOG.debug("initialize(): nameField = " + titleField);
 
-		//initializeResultTable();
-
 		list.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				String imageLocalization = "file:\\\\\\" + folder.getAbsolutePath() + "\\" + newValue;
-				Parent root;
 				try {
 					showImageDialog(imageLocalization);
 
@@ -99,6 +86,9 @@ public class PersonSearchController {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/starterkit/javafx/view/imageViewer.fxml"));
 	
 		Stage stage = new Stage(StageStyle.DECORATED);
+		stage.setWidth(600);
+		stage.setResizable(false);
+		stage.setHeight(600);
 		stage.setScene(new Scene((Pane) loader.load()));
 		
 		ImageController controller = loader.<ImageController>getController();
@@ -114,11 +104,6 @@ public class PersonSearchController {
 		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 	}
 
-	private void initializeResultTable() {
-		list.setPlaceholder(new Label(resources.getString("table.emptyText")));
-
-	}
-
 	@FXML
 	private void searchButtonAction(ActionEvent event) {
 		LOG.debug("'Search' button clicked");
@@ -131,8 +116,6 @@ public class PersonSearchController {
 		File[] d = folder.listFiles();
 		List<String> b = new ArrayList<>();
 
-		String[] names = new String[d.length];
-
 		for (File c : d) {
 			if (c.getName().contains(".") && c.getName().charAt(0) != '.') {
 				if (c.getName().contains(".png") || c.getName().contains(".jpg"))
@@ -142,12 +125,6 @@ public class PersonSearchController {
 
 		ObservableList<String> q = FXCollections.observableArrayList(b);
 		list.setItems(q);
-	}
-
-	@FXML
-	private void showButtonAction(ActionEvent event) {
-		LOG.debug("'Show' button clicked");
-
 	}
 
 }
