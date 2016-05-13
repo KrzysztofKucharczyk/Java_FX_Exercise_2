@@ -34,6 +34,8 @@ public class PersonSearchController {
 
 	private File folder = new File("");
 
+	private String[] files;
+	
 	@FXML
 	private AnchorPane anchorPane;
 
@@ -54,24 +56,30 @@ public class PersonSearchController {
 
 	@FXML
 	private ListView<String> list = new ListView<>();
-
+	
 	@SuppressWarnings("unused")
 	private final Speaker speaker = Speaker.INSTANCE;
 
 	public PersonSearchController() {
-		LOG.debug("Constructor: nameField = " + titleField);
+		LOG.debug("Constructor");
 	}
 
 	@FXML
 	private void initialize() {
-		LOG.debug("initialize(): nameField = " + titleField);
-
+		LOG.debug("initialize()");
 		list.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				String imageLocalization = "file:\\\\\\" + folder.getAbsolutePath() + "\\" + newValue;
+				String imageLocalization = "file:\\\\\\" + folder.getAbsolutePath() + "\\";
+				int pictureValue = 0;
+				
+				for(int i = 0; i< files.length; i++) {
+					if(newValue.equals(files[i]))
+						pictureValue = i;
+				}
+					
 				try {
-					showImageDialog(imageLocalization);
+					showImageDialog(pictureValue, imageLocalization, files);
 
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -82,18 +90,15 @@ public class PersonSearchController {
 		});
 	}
 
-	private Stage showImageDialog(String filepath) throws IOException {
+	private Stage showImageDialog(int index, String filepath, String[] files) throws IOException {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/starterkit/javafx/view/imageViewer.fxml"));
-	
 		Stage stage = new Stage(StageStyle.DECORATED);
+		stage.setHeight(500);
 		stage.setWidth(600);
 		stage.setResizable(false);
-		stage.setHeight(600);
 		stage.setScene(new Scene((Pane) loader.load()));
-		
 		ImageController controller = loader.<ImageController>getController();
-		System.err.println(filepath);
-		controller.initData(filepath);
+		controller.initData(index, filepath, files);
 		stage.show();
 		
 		return stage;
@@ -125,6 +130,11 @@ public class PersonSearchController {
 
 		ObservableList<String> q = FXCollections.observableArrayList(b);
 		list.setItems(q);
+		
+		files = new String[q.size()];
+		
+		for(int i = 0; i < q.size(); i++)
+			files[i] = q.get(i);
 	}
 
 }

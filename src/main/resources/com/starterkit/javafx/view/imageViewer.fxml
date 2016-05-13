@@ -7,17 +7,23 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.*?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="600.0" prefWidth="600"
+<AnchorPane fx:id="anchorPane" prefHeight="550" prefWidth="600"
 	xmlns="http://javafx.com/javafx/8.0.51" xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="com.starterkit.javafx.controller.ImageController">
-	<ScrollPane	fx:id="scrollPane" layoutX="0" layoutY="0" prefHeight="400" prefWidth="585" pannable="true">
+	<ScrollPane fx:id="scrollPane" layoutX="0" layoutY="0"
+		prefHeight="400" prefWidth="595" pannable="true">
 		<content>
-			<ImageView fx:id="imageView" layoutX="0" layoutY="0" preserveRatio="true" />
+			<ImageView fx:id="imageView" layoutX="0" layoutY="0"
+				preserveRatio="true" onScroll="#scrollAction"  />
 		</content>
 	</ScrollPane>
-	<Button fx:id="nextImageButton" defaultButton="true" layoutX="14.0"
-		layoutY="550.0" mnemonicParsing="false" onAction="#nextImageButtonAction"
+	<Button fx:id="previousImageButton" defaultButton="false"
+		layoutX="14.0" layoutY="420" mnemonicParsing="false"
+		onAction="#previousImageButtonAction" text="button.previous" />
+	<Button fx:id="nextImageButton" defaultButton="true" layoutX="124.0"
+		layoutY="420" mnemonicParsing="false" onAction="#nextImageButtonAction"
 		text="button.search" />
-	<!-- <Button fx:id="previousImageButton" defaultButton="false" layoutX="54.0" 
-		layoutY="550.0" mnemonicParsing="false" text="%button.search" /> -->
+	<Button fx:id="slideshowButton" defaultButton="true" layoutX="224.0"
+		layoutY="420" mnemonicParsing="false" onAction="#slideshowButtonAction"
+		text="button.search" />
 </AnchorPane>
