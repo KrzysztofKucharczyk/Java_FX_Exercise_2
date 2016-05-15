@@ -78,9 +78,11 @@ public class ImageController extends PersonSearchController {
 			public void run() {
 				for (int i = 0; i < files.length; i++) {
 					try {
+						// REV: aktualizacja interfejsu musi byc robiona w watku JavaFX
 						nextImageButtonAction();
 						Thread.sleep(2 * 1000);
 					} catch (IOException e1) {
+						// REV: obsluga wyjatkow
 						e1.printStackTrace();
 					} catch (InterruptedException e) {
 						e.printStackTrace();

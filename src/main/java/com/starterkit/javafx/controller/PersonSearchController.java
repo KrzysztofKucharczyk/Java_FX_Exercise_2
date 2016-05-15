@@ -28,6 +28,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+// REV: ta nazwa kompletnie tu nie pasuje
 public class PersonSearchController {
 
 	private static final Logger LOG = Logger.getLogger(PersonSearchController.class);
@@ -45,6 +46,7 @@ public class PersonSearchController {
 	@FXML
 	private URL location;
 
+	// REV: nie ma takich kontrolek w FXMLu
 	@FXML
 	private TextField titleField;
 
@@ -57,6 +59,7 @@ public class PersonSearchController {
 	@FXML
 	private ListView<String> list = new ListView<>();
 	
+	// REV: skoro jest nieuzywany to lepiej go usunac
 	@SuppressWarnings("unused")
 	private final Speaker speaker = Speaker.INSTANCE;
 
@@ -82,6 +85,7 @@ public class PersonSearchController {
 					showImageDialog(pictureValue, imageLocalization, files);
 
 				} catch (IOException e) {
+					// REV: obsluga wyjatkow
 					e.printStackTrace();
 				}
 
@@ -104,7 +108,9 @@ public class PersonSearchController {
 		return stage;
 	}
 
+	// REV: dlaczego static?
 	private static void configureFileChooser(final DirectoryChooser fileChooser) {
+		// REV: tytul z bundla
 		fileChooser.setTitle("View Pictures");
 		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 	}
@@ -115,12 +121,14 @@ public class PersonSearchController {
 		Stage searchButtonStage = (Stage) searchButton.getScene().getWindow();
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 		configureFileChooser(directoryChooser);
+		// REV: j.w.
 		directoryChooser.setTitle("Open Resource File");
 		folder = directoryChooser.showDialog(searchButtonStage);
 
 		File[] d = folder.listFiles();
 		List<String> b = new ArrayList<>();
 
+		// REV: listFiles moze przefiltrowac wynik
 		for (File c : d) {
 			if (c.getName().contains(".") && c.getName().charAt(0) != '.') {
 				if (c.getName().contains(".png") || c.getName().contains(".jpg"))

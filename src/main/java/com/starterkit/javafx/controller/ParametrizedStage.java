@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
+// REV: ta klasa nie jest wykorzystywana
 public class ParametrizedStage extends Stage{
 	private String filePath;
 	
